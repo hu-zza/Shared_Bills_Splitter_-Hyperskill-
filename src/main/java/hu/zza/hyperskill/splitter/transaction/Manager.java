@@ -123,8 +123,8 @@ public abstract class Manager
             }
         }
         
-        // Delete duplicates before excluding.
-        var result = TEMPORARY_GROUP.stream().distinct().collect(Collectors.toList());
+        // Delete duplicates and sort by names before excluding.
+        var result = TEMPORARY_GROUP.stream().distinct().sorted().collect(Collectors.toList());
         
         // Delete last occurrences of EXCLUDING_LIST elements in TEMPORARY_GROUP.
         EXCLUDING_LIST
