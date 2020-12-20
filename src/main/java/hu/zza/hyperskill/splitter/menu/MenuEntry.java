@@ -1,7 +1,5 @@
 package hu.zza.hyperskill.splitter.menu;
 
-import hu.zza.hyperskill.splitter.config.MenuLeaf;
-import hu.zza.hyperskill.splitter.config.MenuNode;
 import hu.zza.hyperskill.splitter.menu.parameter.Parameter;
 import hu.zza.hyperskill.splitter.menu.parameter.ParameterName;
 
@@ -15,7 +13,7 @@ public abstract class MenuEntry
     private final Position                                         position;
     private final Position[]                                       links;
     private final Function<Map<ParameterName, Parameter>, Integer> function;
-    private final MenuNode[]                                       functionLinks;
+    private final NodePosition[]                                       functionLinks;
     
     
     // Full-fledged, low-level constructor
@@ -23,7 +21,7 @@ public abstract class MenuEntry
                       String name,
                       Position[] links,
                       Function<Map<ParameterName, Parameter>, Integer> function,
-                      MenuNode... functionLinks
+                      NodePosition... functionLinks
     )
     {
         this.position      = position;
@@ -87,7 +85,7 @@ public abstract class MenuEntry
     
     public static class Node extends MenuEntry
     {
-        public Node(MenuNode position, String name, Position... links)
+        public Node(NodePosition position, String name, Position... links)
         {
             /*
             Constructor parameters in order:
@@ -106,10 +104,10 @@ public abstract class MenuEntry
     
     public static class Leaf extends MenuEntry
     {
-        public Leaf(MenuLeaf position,
+        public Leaf(LeafPosition position,
                     String name,
                     Function<Map<ParameterName, Parameter>, Integer> function,
-                    MenuNode... functionLinks
+                    NodePosition... functionLinks
         )
         {
             /*
