@@ -1,6 +1,6 @@
 package hu.zza.hyperskill.splitter.config;
 
-import hu.zza.hyperskill.splitter.menu.NodePosition;
+import hu.zza.clim.NodePosition;
 
 
 public enum MenuNode implements NodePosition

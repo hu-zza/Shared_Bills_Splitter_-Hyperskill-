@@ -1,14 +1,14 @@
 package hu.zza.hyperskill.splitter.config;
 
+import hu.zza.clim.ControlType;
+import hu.zza.clim.Menu;
+import hu.zza.clim.MenuEntry;
+import hu.zza.clim.MenuStructure;
+import hu.zza.clim.Position;
+import hu.zza.clim.parameter.Parameter;
+import hu.zza.clim.parameter.ParameterMatcher;
+import hu.zza.clim.parameter.ParameterPattern;
 import hu.zza.hyperskill.splitter.Console;
-import hu.zza.hyperskill.splitter.menu.ControlType;
-import hu.zza.hyperskill.splitter.menu.Menu;
-import hu.zza.hyperskill.splitter.menu.MenuEntry;
-import hu.zza.hyperskill.splitter.menu.MenuStructure;
-import hu.zza.hyperskill.splitter.menu.Position;
-import hu.zza.hyperskill.splitter.menu.parameter.Parameter;
-import hu.zza.hyperskill.splitter.menu.parameter.ParameterMatcher;
-import hu.zza.hyperskill.splitter.menu.parameter.ParameterPattern;
 import hu.zza.hyperskill.splitter.transaction.Ledger;
 import hu.zza.hyperskill.splitter.transaction.Manager;
 
@@ -168,7 +168,7 @@ public abstract class MenuInitializer
         ParameterPattern                    parameterPattern;
         
         
-        parameterPattern = new ParameterPattern(delimiter, List.of(COMMAND), commandParameter);
+        parameterPattern = new ParameterPattern(delimiter, List.of(COMMAND), List.of(commandParameter));
         
         patternMap.put(MenuLeaf.HELP, parameterPattern);
         patternMap.put(MenuLeaf.EXIT, parameterPattern);
@@ -176,8 +176,7 @@ public abstract class MenuInitializer
         
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(DATE, COMMAND),
-                                                optionalDateParameter,
-                                                commandParameter
+                                                List.of(optionalDateParameter, commandParameter)
         );
         
         patternMap.put(MenuLeaf.WRITEOFF, parameterPattern);
@@ -185,8 +184,7 @@ public abstract class MenuInitializer
         
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(COMMAND, NAME),
-                                                commandParameter,
-                                                upperCaseWordParameter
+                                                List.of(commandParameter, upperCaseWordParameter)
         );
         
         patternMap.put(MenuLeaf.SECRETSANTA, parameterPattern);
@@ -194,10 +192,11 @@ public abstract class MenuInitializer
         
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(DATE, COMMAND, METHOD, LIST),
-                                                optionalDateParameter,
-                                                commandParameter,
-                                                optionalConstantParameter,
-                                                optionalListParameter
+                                                List.of(optionalDateParameter,
+                                                        commandParameter,
+                                                        optionalConstantParameter,
+                                                        optionalListParameter
+                                                )
         );
         
         patternMap.put(MenuLeaf.BALANCE, parameterPattern);
@@ -206,10 +205,11 @@ public abstract class MenuInitializer
         
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(COMMAND, METHOD, NAME, LIST),
-                                                commandParameter,
-                                                constantParameter,
-                                                upperCaseWordParameter,
-                                                optionalListParameter
+                                                List.of(commandParameter,
+                                                        constantParameter,
+                                                        upperCaseWordParameter,
+                                                        optionalListParameter
+                                                )
         );
         
         patternMap.put(MenuLeaf.GROUP, parameterPattern);
@@ -217,11 +217,12 @@ public abstract class MenuInitializer
         
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(DATE, COMMAND, FROM, TO, AMOUNT),
-                                                optionalDateParameter,
-                                                commandParameter,
-                                                wordParameter,
-                                                wordParameter,
-                                                numberParameter
+                                                List.of(optionalDateParameter,
+                                                        commandParameter,
+                                                        wordParameter,
+                                                        wordParameter,
+                                                        numberParameter
+                                                )
         );
         
         patternMap.put(MenuLeaf.BORROW, parameterPattern);
@@ -230,12 +231,13 @@ public abstract class MenuInitializer
         
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(DATE, COMMAND, NAME, ITEM, AMOUNT, LIST),
-                                                optionalDateParameter,
-                                                commandParameter,
-                                                wordParameter,
-                                                wordParameter,
-                                                numberParameter,
-                                                listParameter
+                                                List.of(optionalDateParameter,
+                                                        commandParameter,
+                                                        wordParameter,
+                                                        wordParameter,
+                                                        numberParameter,
+                                                        listParameter
+                                                )
         );
         
         patternMap.put(MenuLeaf.PURCHASE, parameterPattern);

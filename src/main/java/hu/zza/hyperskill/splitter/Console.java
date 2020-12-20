@@ -1,9 +1,9 @@
 package hu.zza.hyperskill.splitter;
 
 import hu.zza.hyperskill.splitter.config.MenuInitializer;
-import hu.zza.hyperskill.splitter.menu.Menu;
-import hu.zza.hyperskill.splitter.menu.parameter.Parameter;
-import hu.zza.hyperskill.splitter.menu.parameter.ParameterName;
+import hu.zza.clim.Menu;
+import hu.zza.clim.parameter.Parameter;
+import hu.zza.clim.parameter.ParameterName;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

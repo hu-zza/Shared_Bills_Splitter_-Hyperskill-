@@ -2,8 +2,8 @@ package hu.zza.hyperskill.splitter.transaction;
 
 import hu.zza.hyperskill.splitter.config.MenuConstant;
 import hu.zza.hyperskill.splitter.config.MenuParameter;
-import hu.zza.hyperskill.splitter.menu.parameter.Parameter;
-import hu.zza.hyperskill.splitter.menu.parameter.ParameterName;
+import hu.zza.clim.parameter.Parameter;
+import hu.zza.clim.parameter.ParameterName;
 
 import java.util.ArrayList;
 import java.util.Collections;

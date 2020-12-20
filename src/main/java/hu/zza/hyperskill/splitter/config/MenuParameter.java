@@ -1,6 +1,6 @@
 package hu.zza.hyperskill.splitter.config;
 
-import hu.zza.hyperskill.splitter.menu.parameter.ParameterName;
+import hu.zza.clim.parameter.ParameterName;
 
 
 public enum MenuParameter implements ParameterName

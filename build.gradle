@@ -10,9 +10,11 @@ sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
+	maven { url "https://jitpack.io" }
 }
 
 dependencies {
+	implementation 'com.github.hu-zza:clim:master-SNAPSHOT'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	runtimeOnly 'com.h2database:h2'

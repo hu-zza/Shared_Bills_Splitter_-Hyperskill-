@@ -1,7 +1,7 @@
 package hu.zza.hyperskill.splitter.config;
 
-import hu.zza.hyperskill.splitter.menu.LeafPosition;
-import hu.zza.hyperskill.splitter.menu.Message;
+import hu.zza.clim.LeafPosition;
+import hu.zza.clim.Message;
 
 import java.util.Arrays;
 import java.util.List;
