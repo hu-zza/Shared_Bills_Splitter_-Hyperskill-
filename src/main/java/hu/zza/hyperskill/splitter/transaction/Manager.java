@@ -1,9 +1,10 @@
 package hu.zza.hyperskill.splitter.transaction;
 
-import hu.zza.hyperskill.splitter.config.MenuConstant;
-import hu.zza.hyperskill.splitter.config.MenuParameter;
 import hu.zza.clim.parameter.Parameter;
 import hu.zza.clim.parameter.ParameterName;
+import hu.zza.hyperskill.splitter.config.MenuConstant;
+import hu.zza.hyperskill.splitter.config.MenuParameter;
+import hu.zza.hyperskill.splitter.config.ParameterParser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,12 +23,9 @@ public abstract class Manager
     public static int manageTeam(Map<ParameterName, Parameter> parameterMap)
     {
         
-        var method = (MenuConstant) parameterMap.get(MenuParameter.METHOD).getValue();
-        
-        var name = (String) parameterMap.get(MenuParameter.NAME).getValue();
-        
-        var accountList = createTemporaryTeam(getStringList(parameterMap));
-        
+        MenuConstant  method      = MenuConstant.valueOf(parameterMap.get(MenuParameter.METHOD).getValue());
+        String        name        = parameterMap.get(MenuParameter.NAME).getValue();
+        List<Account> accountList = createTemporaryTeam(getStringList(parameterMap));
         
         try
         {
@@ -67,7 +65,7 @@ public abstract class Manager
     
     public static int secretSanta(Map<ParameterName, Parameter> parameterMap)
     {
-        Team team = RepositoryManager.teamOf((String) parameterMap.get(MenuParameter.NAME).getValue());
+        Team team = RepositoryManager.teamOf(parameterMap.get(MenuParameter.NAME).getValue());
         
         List<Account> members = team.getMembersStream().collect(Collectors.toList());
         if (members.size() < 1)
@@ -77,14 +75,13 @@ public abstract class Manager
             ));
         }
         
-        var shuffledIndices = createShuffledIntList(members.size()).toArray(new Integer[0]);
-        List<String> result = new ArrayList<>();
+        Integer[]    shuffledIndices = createShuffledIntList(members.size()).toArray(new Integer[0]);
+        List<String> result          = new ArrayList<>();
         for (int i = 0; i < shuffledIndices.length - 1; i++)
         {
-            result.add(String.format(
-                    "%s gift to %s",
-                    members.get(shuffledIndices[i]),
-                    members.get(shuffledIndices[i + 1])
+            result.add(String.format("%s gift to %s",
+                                     members.get(shuffledIndices[i]),
+                                     members.get(shuffledIndices[i + 1])
             ));
         }
         
@@ -127,21 +124,16 @@ public abstract class Manager
         var result = TEMPORARY_GROUP.stream().distinct().sorted().collect(Collectors.toList());
         
         // Delete last occurrences of EXCLUDING_LIST elements in TEMPORARY_GROUP.
-        EXCLUDING_LIST
-                .stream()
-                .filter(result::contains)
-                .forEach(result::remove);
+        EXCLUDING_LIST.stream().filter(result::contains).forEach(result::remove);
         
         
         return result;
     }
     
     
-    // TODO: ...........
-    @SuppressWarnings("unchecked")
     static List<String> getStringList(Map<ParameterName, Parameter> parameterMap)
     {
-        return (List<String>) parameterMap.get(MenuParameter.LIST).getOrDefault();
+        return ParameterParser.parseStringList(parameterMap.get(MenuParameter.LIST).getOrDefault());
     }
     
     

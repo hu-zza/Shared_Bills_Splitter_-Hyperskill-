@@ -1,10 +1,10 @@
 package hu.zza.hyperskill.splitter.transaction;
 
-import hu.zza.hyperskill.splitter.config.MenuConstant;
-import hu.zza.hyperskill.splitter.config.MenuLeaf;
-import hu.zza.hyperskill.splitter.config.MenuParameter;
 import hu.zza.clim.parameter.Parameter;
 import hu.zza.clim.parameter.ParameterName;
+import hu.zza.hyperskill.splitter.config.MenuConstant;
+import hu.zza.hyperskill.splitter.config.MenuLeaf;
+import hu.zza.hyperskill.splitter.config.ParameterParser;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -18,6 +18,14 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static hu.zza.hyperskill.splitter.config.MenuParameter.AMOUNT;
+import static hu.zza.hyperskill.splitter.config.MenuParameter.COMMAND;
+import static hu.zza.hyperskill.splitter.config.MenuParameter.DATE;
+import static hu.zza.hyperskill.splitter.config.MenuParameter.FROM;
+import static hu.zza.hyperskill.splitter.config.MenuParameter.METHOD;
+import static hu.zza.hyperskill.splitter.config.MenuParameter.NAME;
+import static hu.zza.hyperskill.splitter.config.MenuParameter.TO;
+
 
 public abstract class Ledger
 {
@@ -29,16 +37,12 @@ public abstract class Ledger
     
     public static int makeMicroTransaction(Map<ParameterName, Parameter> parameterMap)
     {
-        var        command         = (MenuLeaf) parameterMap.get(MenuParameter.COMMAND).getValue();
-        var        reversed        = command == MenuLeaf.BORROW;
-        var        transactionDate = (LocalDate) parameterMap.get(MenuParameter.DATE).getOrDefault();
-        Account    accountA        = RepositoryManager.accountOf((String) parameterMap
-                                                                                  .get(MenuParameter.FROM)
-                                                                                  .getValue());
-        Account    accountB        = RepositoryManager.accountOf((String) parameterMap
-                                                                                  .get(MenuParameter.TO)
-                                                                                  .getValue());
-        BigDecimal amount          = new BigDecimal((String) parameterMap.get(MenuParameter.AMOUNT).getValue());
+        MenuLeaf   command         = MenuLeaf.valueOf(parameterMap.get(COMMAND).getValue());
+        boolean    reversed        = command == MenuLeaf.BORROW;
+        LocalDate  transactionDate = ParameterParser.parseLocalDate(parameterMap.get(DATE).getOrDefault());
+        Account    accountA        = RepositoryManager.accountOf(parameterMap.get(FROM).getValue());
+        Account    accountB        = RepositoryManager.accountOf(parameterMap.get(TO).getValue());
+        BigDecimal amount          = new BigDecimal(parameterMap.get(AMOUNT).getValue());
         
         RepositoryManager.makeTransaction(transactionDate, accountA, accountB, amount, reversed);
         
@@ -48,11 +52,11 @@ public abstract class Ledger
     
     public static int makeMacroTransaction(Map<ParameterName, Parameter> parameterMap)
     {
-        var command         = (MenuLeaf) parameterMap.get(MenuParameter.COMMAND).getValue();
-        var reversed        = command == MenuLeaf.CASHBACK;
-        var transactionDate = (LocalDate) parameterMap.get(MenuParameter.DATE).getOrDefault();
-        Account buyer = RepositoryManager.accountOf((String) parameterMap.get(MenuParameter.NAME).getValue());
-        BigDecimal cost = new BigDecimal((String) parameterMap.get(MenuParameter.AMOUNT).getValue());
+        MenuLeaf   command         = MenuLeaf.valueOf(parameterMap.get(COMMAND).getValue());
+        boolean    reversed        = command == MenuLeaf.CASHBACK;
+        LocalDate  transactionDate = ParameterParser.parseLocalDate(parameterMap.get(DATE).getOrDefault());
+        Account    buyer           = RepositoryManager.accountOf(parameterMap.get(NAME).getValue());
+        BigDecimal cost            = new BigDecimal(parameterMap.get(AMOUNT).getValue());
         
         List<String>  rawAccountList = Manager.getStringList(parameterMap);
         List<Account> accountList    = Manager.createTemporaryTeam(rawAccountList);
@@ -81,18 +85,24 @@ public abstract class Ledger
         return 0;
     }
     
+    
     public static int getPerfectBalance(Map<ParameterName, Parameter> parameterMap)
     {
         System.out.println("Chuck owes Bob 30.00");
         List<Account> accountList = Manager.createTemporaryTeam(Manager.getStringList(parameterMap));
-        accountList.forEach(a -> {a.getIncomingStream().forEach(System.out::println); a.getOutgoingStream().forEach(System.out::println); });
+        accountList.forEach(a ->
+                            {
+                                a.getIncomingStream().forEach(System.out::println);
+                                a.getOutgoingStream().forEach(System.out::println);
+                            });
         return 0;
     }
     
+    
     public static int getBalance(Map<ParameterName, Parameter> parameterMap)
     {
-        MenuConstant method = (MenuConstant) parameterMap.get(MenuParameter.METHOD).getOrDefault();
-        LocalDate    date   = (LocalDate) parameterMap.get(MenuParameter.DATE).getOrDefault();
+        MenuConstant  method      = MenuConstant.valueOf(parameterMap.get(METHOD).getOrDefault());
+        LocalDate     date        = ParameterParser.parseLocalDate(parameterMap.get(DATE).getOrDefault());
         List<Account> accountList = Manager.createTemporaryTeam(Manager.getStringList(parameterMap));
         
         switch (method)
@@ -112,7 +122,7 @@ public abstract class Ledger
     
     public static int writeOff(Map<ParameterName, Parameter> parameterMap)
     {
-        var date = (LocalDate) parameterMap.get(MenuParameter.DATE).getOrDefault();
+        LocalDate date = ParameterParser.parseLocalDate(parameterMap.get(DATE).getOrDefault());
         RepositoryManager.writeOffTransactionsUntil(date.plusDays(1));
         return 0;
     }

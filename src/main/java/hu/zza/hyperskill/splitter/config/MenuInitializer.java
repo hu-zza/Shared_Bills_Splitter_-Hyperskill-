@@ -125,7 +125,7 @@ public abstract class MenuInitializer
         // REGEXES
         
         final String delimiter    = " ";
-        final String dottedDate   = "\\d{4}\\.\\d{2}\\.\\d{2}";
+        final String dottedDate   = "\\d{4}.\\d{2}.\\d{2}";
         final String captureFrame = "(\\b%s\\b)";
         
         final String dottedDateRegex    = String.format(captureFrame, dottedDate);
@@ -137,29 +137,19 @@ public abstract class MenuInitializer
         
         // PARAMETERS : required
         
-        final var commandParameter = new Parameter<MenuLeaf>(wordRegex, MenuLeaf::getConstantByName);
-        
-        final var constantParameter = new Parameter<MenuConstant>(wordRegex, MenuConstant::getConstantByName);
-        
-        final var wordParameter = new Parameter<String>(wordRegex, String::valueOf);
-        
-        final var upperCaseWordParameter = new Parameter<String>(upperCaseWordRegex, String::valueOf);
-        
-        final var numberParameter = new Parameter<String>(numberRegex, String::valueOf);
-        
-        final var listParameter = new Parameter<List<String>>(listRegex, MenuParser::toStringList);
+        final Parameter wordParameter          = Parameter.of(wordRegex);
+        final Parameter constantParameter      = Parameter.of(wordRegex, String::toUpperCase);
+        final Parameter upperCaseWordParameter = Parameter.of(upperCaseWordRegex);
+        final Parameter numberParameter        = Parameter.of(numberRegex);
+        final Parameter listParameter          = Parameter.of(listRegex);
         
         
         // PARAMETERS : optional
         
-        final var optionalDateParameter = new Parameter<LocalDate>(dottedDateRegex,
-                                                                   MenuParser::toLocalDateFromDotted,
-                                                                   LocalDate::now
-        );
+        final Parameter optionalDateParameter = Parameter.of(dottedDateRegex, () -> String.valueOf(LocalDate.now()));
         
-        final var optionalConstantParameter = constantParameter.with(() -> MenuConstant.CLOSE);
-        
-        final var optionalListParameter = listParameter.with(List::of);
+        final Parameter optionalConstantParameter = Parameter.of(wordRegex, String::toUpperCase, () -> "CLOSE");
+        final Parameter optionalListParameter = Parameter.of(listRegex, "");
         
         
         // BUILDING patternMap
@@ -168,7 +158,7 @@ public abstract class MenuInitializer
         ParameterPattern                    parameterPattern;
         
         
-        parameterPattern = new ParameterPattern(delimiter, List.of(COMMAND), commandParameter);
+        parameterPattern = new ParameterPattern(delimiter, List.of(COMMAND), constantParameter);
         
         patternMap.put(MenuLeaf.HELP, parameterPattern);
         patternMap.put(MenuLeaf.EXIT, parameterPattern);
@@ -177,7 +167,7 @@ public abstract class MenuInitializer
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(DATE, COMMAND),
                                                 optionalDateParameter,
-                                                commandParameter
+                                                constantParameter
         );
         
         patternMap.put(MenuLeaf.WRITEOFF, parameterPattern);
@@ -185,7 +175,7 @@ public abstract class MenuInitializer
         
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(COMMAND, NAME),
-                                                commandParameter,
+                                                constantParameter,
                                                 upperCaseWordParameter
         );
         
@@ -195,7 +185,7 @@ public abstract class MenuInitializer
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(DATE, COMMAND, METHOD, LIST),
                                                 optionalDateParameter,
-                                                commandParameter,
+                                                constantParameter,
                                                 optionalConstantParameter,
                                                 optionalListParameter
         );
@@ -206,7 +196,7 @@ public abstract class MenuInitializer
         
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(COMMAND, METHOD, NAME, LIST),
-                                                commandParameter,
+                                                constantParameter,
                                                 constantParameter,
                                                 upperCaseWordParameter,
                                                 optionalListParameter
@@ -218,7 +208,7 @@ public abstract class MenuInitializer
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(DATE, COMMAND, FROM, TO, AMOUNT),
                                                 optionalDateParameter,
-                                                commandParameter,
+                                                constantParameter,
                                                 wordParameter,
                                                 wordParameter,
                                                 numberParameter
@@ -231,7 +221,7 @@ public abstract class MenuInitializer
         parameterPattern = new ParameterPattern(delimiter,
                                                 List.of(DATE, COMMAND, NAME, ITEM, AMOUNT, LIST),
                                                 optionalDateParameter,
-                                                commandParameter,
+                                                constantParameter,
                                                 wordParameter,
                                                 wordParameter,
                                                 numberParameter,
