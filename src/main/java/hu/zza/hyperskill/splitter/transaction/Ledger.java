@@ -4,7 +4,6 @@ import hu.zza.clim.parameter.Parameter;
 import hu.zza.clim.parameter.ParameterName;
 import hu.zza.hyperskill.splitter.config.MenuConstant;
 import hu.zza.hyperskill.splitter.config.MenuLeaf;
-import hu.zza.hyperskill.splitter.config.ParameterParser;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -18,11 +17,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static hu.zza.hyperskill.splitter.config.MenuParameter.AMOUNT;
-import static hu.zza.hyperskill.splitter.config.MenuParameter.COMMAND;
-import static hu.zza.hyperskill.splitter.config.MenuParameter.DATE;
 import static hu.zza.hyperskill.splitter.config.MenuParameter.FROM;
-import static hu.zza.hyperskill.splitter.config.MenuParameter.METHOD;
+import static hu.zza.hyperskill.splitter.config.MenuParameter.LIST;
 import static hu.zza.hyperskill.splitter.config.MenuParameter.NAME;
 import static hu.zza.hyperskill.splitter.config.MenuParameter.TO;
 
@@ -37,14 +33,14 @@ public abstract class Ledger
     
     public static int makeMicroTransaction(Map<ParameterName, Parameter> parameterMap)
     {
-        MenuLeaf   command         = MenuLeaf.valueOf(parameterMap.get(COMMAND).getValue());
-        boolean    reversed        = command == MenuLeaf.BORROW;
-        LocalDate  transactionDate = ParameterParser.parseLocalDate(parameterMap.get(DATE).getOrDefault());
-        Account    accountA        = RepositoryManager.accountOf(parameterMap.get(FROM).getValue());
-        Account    accountB        = RepositoryManager.accountOf(parameterMap.get(TO).getValue());
-        BigDecimal amount          = new BigDecimal(parameterMap.get(AMOUNT).getValue());
         
-        RepositoryManager.makeTransaction(transactionDate, accountA, accountB, amount, reversed);
+        RepositoryManager.makeTransaction(
+                ParameterParser.getDate(parameterMap),
+                ParameterParser.getAccount(parameterMap, FROM),
+                ParameterParser.getAccount(parameterMap, TO),
+                ParameterParser.getAmount(parameterMap),
+                ParameterParser.getCommand(parameterMap) == MenuLeaf.BORROW
+        );
         
         return 0;
     }
@@ -52,21 +48,19 @@ public abstract class Ledger
     
     public static int makeMacroTransaction(Map<ParameterName, Parameter> parameterMap)
     {
-        MenuLeaf   command         = MenuLeaf.valueOf(parameterMap.get(COMMAND).getValue());
-        boolean    reversed        = command == MenuLeaf.CASHBACK;
-        LocalDate  transactionDate = ParameterParser.parseLocalDate(parameterMap.get(DATE).getOrDefault());
-        Account    buyer           = RepositoryManager.accountOf(parameterMap.get(NAME).getValue());
-        BigDecimal cost            = new BigDecimal(parameterMap.get(AMOUNT).getValue());
+        LocalDate  transactionDate = ParameterParser.getDate(parameterMap);
+        Account    buyer           = ParameterParser.getAccount(parameterMap, NAME);
+        BigDecimal cost            = ParameterParser.getAmount(parameterMap);
+        boolean    reversed        = ParameterParser.getCommand(parameterMap) == MenuLeaf.CASHBACK;
         
-        List<String>  rawAccountList = Manager.getStringList(parameterMap);
-        List<Account> accountList    = Manager.createTemporaryTeam(rawAccountList);
+        List<Account> accountList = ParameterParser.getAccountList(parameterMap);
         
         int listSize = accountList.size();
         if (listSize < 1)
         {
             throw new IllegalArgumentException(String.format(
                     "The account list '(%s)' is effectively empty, transaction fails.",
-                    String.join(", ", rawAccountList)
+                    parameterMap.get(LIST).getValue()
             ));
         }
         
@@ -89,7 +83,7 @@ public abstract class Ledger
     public static int getPerfectBalance(Map<ParameterName, Parameter> parameterMap)
     {
         System.out.println("Chuck owes Bob 30.00");
-        List<Account> accountList = Manager.createTemporaryTeam(Manager.getStringList(parameterMap));
+        List<Account> accountList = ParameterParser.getAccountList(parameterMap);
         accountList.forEach(a ->
                             {
                                 a.getIncomingStream().forEach(System.out::println);
@@ -101,9 +95,9 @@ public abstract class Ledger
     
     public static int getBalance(Map<ParameterName, Parameter> parameterMap)
     {
-        MenuConstant  method      = MenuConstant.valueOf(parameterMap.get(METHOD).getOrDefault());
-        LocalDate     date        = ParameterParser.parseLocalDate(parameterMap.get(DATE).getOrDefault());
-        List<Account> accountList = Manager.createTemporaryTeam(Manager.getStringList(parameterMap));
+        MenuConstant  method      = ParameterParser.getMethod(parameterMap);
+        LocalDate     date        = ParameterParser.getDate(parameterMap);
+        List<Account> accountList = ParameterParser.getAccountList(parameterMap);
         
         switch (method)
         {
@@ -122,7 +116,7 @@ public abstract class Ledger
     
     public static int writeOff(Map<ParameterName, Parameter> parameterMap)
     {
-        LocalDate date = ParameterParser.parseLocalDate(parameterMap.get(DATE).getOrDefault());
+        LocalDate date = ParameterParser.getDate(parameterMap);
         RepositoryManager.writeOffTransactionsUntil(date.plusDays(1));
         return 0;
     }
@@ -154,22 +148,20 @@ public abstract class Ledger
                 balance = (balanceMatrix[i][j] - balanceMatrix[j][i]) / 100.0;
                 if (0 < balance)
                 {
-                    resultList.add(String.format(
-                            locale,
-                            resultPattern,
-                            RepositoryManager.getAccountById(j).get(),
-                            RepositoryManager.getAccountById(i).get(),
-                            balance
+                    resultList.add(String.format(locale,
+                                                 resultPattern,
+                                                 RepositoryManager.getAccountById(j).get(),
+                                                 RepositoryManager.getAccountById(i).get(),
+                                                 balance
                     ));
                 }
                 else if (balance < 0)
                 {
-                    resultList.add(String.format(
-                            locale,
-                            resultPattern,
-                            RepositoryManager.getAccountById(i).get(),
-                            RepositoryManager.getAccountById(j).get(),
-                            -balance
+                    resultList.add(String.format(locale,
+                                                 resultPattern,
+                                                 RepositoryManager.getAccountById(i).get(),
+                                                 RepositoryManager.getAccountById(j).get(),
+                                                 -balance
                     ));
                 }
             }

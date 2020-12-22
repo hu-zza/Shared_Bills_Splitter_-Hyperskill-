@@ -2,9 +2,6 @@ package hu.zza.hyperskill.splitter.transaction;
 
 import hu.zza.clim.parameter.Parameter;
 import hu.zza.clim.parameter.ParameterName;
-import hu.zza.hyperskill.splitter.config.MenuConstant;
-import hu.zza.hyperskill.splitter.config.MenuParameter;
-import hu.zza.hyperskill.splitter.config.ParameterParser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,14 +19,12 @@ public abstract class Manager
     
     public static int manageTeam(Map<ParameterName, Parameter> parameterMap)
     {
-        
-        MenuConstant  method      = MenuConstant.valueOf(parameterMap.get(MenuParameter.METHOD).getValue());
-        String        name        = parameterMap.get(MenuParameter.NAME).getValue();
-        List<Account> accountList = createTemporaryTeam(getStringList(parameterMap));
+        String        name        = ParameterParser.getName(parameterMap);
+        List<Account> accountList = ParameterParser.getAccountList(parameterMap);
         
         try
         {
-            switch (method)
+            switch (ParameterParser.getMethod(parameterMap))
             {
                 case SHOW:
                     if (RepositoryManager.existGroupByName(name))
@@ -65,7 +60,7 @@ public abstract class Manager
     
     public static int secretSanta(Map<ParameterName, Parameter> parameterMap)
     {
-        Team team = RepositoryManager.teamOf(parameterMap.get(MenuParameter.NAME).getValue());
+        Team team = ParameterParser.getTeam(parameterMap);
         
         List<Account> members = team.getMembersStream().collect(Collectors.toList());
         if (members.size() < 1)
@@ -93,6 +88,14 @@ public abstract class Manager
         result.stream().sorted().forEach(System.out::println);
         
         return 0;
+    }
+    
+    
+    private static List<Integer> createShuffledIntList(int size)
+    {
+        var intList = IntStream.range(0, size).collect(ArrayList<Integer>::new, ArrayList::add, ArrayList::addAll);
+        Collections.shuffle(intList);
+        return intList;
     }
     
     
@@ -128,20 +131,6 @@ public abstract class Manager
         
         
         return result;
-    }
-    
-    
-    static List<String> getStringList(Map<ParameterName, Parameter> parameterMap)
-    {
-        return ParameterParser.parseStringList(parameterMap.get(MenuParameter.LIST).getOrDefault());
-    }
-    
-    
-    private static List<Integer> createShuffledIntList(int size)
-    {
-        var intList = IntStream.range(0, size).collect(ArrayList<Integer>::new, ArrayList::add, ArrayList::addAll);
-        Collections.shuffle(intList);
-        return intList;
     }
     
     
