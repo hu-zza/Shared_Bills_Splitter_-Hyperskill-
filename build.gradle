@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'hu.zza:clim:aea287ea95' //3c095b8ff1
+	implementation 'hu.zza:clim:3b49ecc6d2'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	runtimeOnly 'com.h2database:h2'

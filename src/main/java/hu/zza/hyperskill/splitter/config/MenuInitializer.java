@@ -138,7 +138,7 @@ public abstract class MenuInitializer
         // PARAMETERS : required
         
         final Parameter wordParameter          = Parameter.of(wordRegex);
-        final Parameter constantParameter      = Parameter.of(wordRegex, String::toUpperCase);
+        final Parameter constantParameter      = wordParameter.with(String::toUpperCase);
         final Parameter upperCaseWordParameter = Parameter.of(upperCaseWordRegex);
         final Parameter numberParameter        = Parameter.of(numberRegex);
         final Parameter listParameter          = Parameter.of(listRegex);
@@ -148,8 +148,8 @@ public abstract class MenuInitializer
         
         final Parameter optionalDateParameter = Parameter.of(dottedDateRegex, () -> String.valueOf(LocalDate.now()));
         
-        final Parameter optionalConstantParameter = Parameter.of(wordRegex, String::toUpperCase, () -> "CLOSE");
-        final Parameter optionalListParameter = Parameter.of(listRegex, "");
+        final Parameter optionalConstantParameter = constantParameter.with("CLOSE");
+        final Parameter optionalListParameter     = listParameter.with("");
         
         
         // BUILDING patternMap
