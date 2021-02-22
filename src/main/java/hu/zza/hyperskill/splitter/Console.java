@@ -20,7 +20,7 @@ public class Console implements CommandLineRunner
     
     public static int help(Map<ParameterName, Parameter> parameterMap)
     {
-        menu.listOptions();
+        menu.listOptions(false);
         return 0;
     }
     
