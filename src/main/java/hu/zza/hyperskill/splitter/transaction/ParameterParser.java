@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public abstract class ParameterParser {
 
   static LocalDate getDate(Map<ParameterName, Parameter> parameterMap) {
@@ -39,37 +38,30 @@ public abstract class ParameterParser {
     }
   }
 
-
   static String getName(Map<ParameterName, Parameter> parameterMap) {
     return parameterMap.get(MenuParameter.NAME).getValue();
   }
-
 
   static Team getTeam(Map<ParameterName, Parameter> parameterMap) {
     return RepositoryManager.teamOf(parameterMap.get(MenuParameter.NAME).getValue());
   }
 
-
   static MenuLeaf getCommand(Map<ParameterName, Parameter> parameterMap) {
     return MenuLeaf.valueOf(parameterMap.get(COMMAND).getValue());
   }
-
 
   static BigDecimal getAmount(Map<ParameterName, Parameter> parameterMap) {
     return new BigDecimal(parameterMap.get(AMOUNT).getValue());
   }
 
-
   static MenuConstant getMethod(Map<ParameterName, Parameter> parameterMap) {
     return MenuConstant.valueOf(parameterMap.get(METHOD).getOrDefault());
   }
 
-
-  static Account getAccount(Map<ParameterName, Parameter> parameterMap,
-      ParameterName parameterName) {
+  static Account getAccount(
+      Map<ParameterName, Parameter> parameterMap, ParameterName parameterName) {
     return RepositoryManager.accountOf(parameterMap.get(parameterName).getValue());
   }
-
 
   static List<Account> getAccountList(Map<ParameterName, Parameter> parameterMap) {
     String rawString = parameterMap.get(MenuParameter.LIST).getOrDefault();

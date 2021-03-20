@@ -1,6 +1,5 @@
 package hu.zza.hyperskill.splitter.transaction;
 
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -17,13 +16,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
-
 @Entity
 class Account implements Comparable<Account> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id = 0;
+
   private String name = "";
 
   @OneToMany(mappedBy = "accountA", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -35,52 +34,37 @@ class Account implements Comparable<Account> {
   @ManyToMany(mappedBy = "memberSet", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Team> membershipSet = new HashSet<>();
 
-
-  Account() {
-  }
-
+  Account() {}
 
   Account(String name) {
     this.name = name;
   }
 
-
-  int getId() {
-    return id;
-  }
-
-
-  String getName() {
-    return name;
-  }
-
-
   Stream<Transaction> getIncomingStream() {
     return incoming.stream().sorted();
   }
-
 
   Stream<Transaction> getOutgoingStream() {
     return outgoing.stream().sorted();
   }
 
-
   Stream<Team> getMembershipStream() {
     return membershipSet.stream().sorted();
   }
-
 
   @Override
   public int compareTo(Account o) {
     return Comparator.comparing(Account::getName).compare(this, o);
   }
 
+  String getName() {
+    return name;
+  }
 
   @Override
   public int hashCode() {
     return Objects.hash(id, name);
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -98,6 +82,9 @@ class Account implements Comparable<Account> {
     return Objects.equals(id, other.getId()) && Objects.equals(name, other.getName());
   }
 
+  int getId() {
+    return id;
+  }
 
   @Override
   public String toString() {
@@ -105,11 +92,9 @@ class Account implements Comparable<Account> {
     return name;
   }
 
-
   boolean join(Team team) {
     return membershipSet.add(team);
   }
-
 
   boolean leave(Team team) {
     return membershipSet.remove(team);

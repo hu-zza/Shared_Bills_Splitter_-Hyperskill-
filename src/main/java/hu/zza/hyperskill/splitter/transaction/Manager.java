@@ -9,12 +9,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-
 public abstract class Manager {
 
   private static final List<Account> TEMPORARY_GROUP = new ArrayList<>();
   private static final List<Account> EXCLUDING_LIST = new ArrayList<>();
-
 
   public static int manageTeam(Map<ParameterName, Parameter> parameterMap) {
     String name = ParameterParser.getName(parameterMap);
@@ -48,45 +46,42 @@ public abstract class Manager {
     return 0;
   }
 
-
   public static int secretSanta(Map<ParameterName, Parameter> parameterMap) {
     Team team = ParameterParser.getTeam(parameterMap);
 
     List<Account> members = team.getMembersStream().collect(Collectors.toList());
     if (members.size() < 1) {
       throw new IllegalArgumentException(
-          String.format("The Team '(%s)' is empty, Secret Santa Draw fails.",
-              team.getName()
-          ));
+          String.format("The Team '(%s)' is empty, Secret Santa Draw fails.", team.getName()));
     }
 
     Integer[] shuffledIndices = createShuffledIntList(members.size()).toArray(new Integer[0]);
     List<String> result = new ArrayList<>();
     for (int i = 0; i < shuffledIndices.length - 1; i++) {
-      result.add(String.format("%s gift to %s",
-          members.get(shuffledIndices[i]),
-          members.get(shuffledIndices[i + 1])
-      ));
+      result.add(
+          String.format(
+              "%s gift to %s",
+              members.get(shuffledIndices[i]), members.get(shuffledIndices[i + 1])));
     }
 
-    result.add(String.format("%s gift to %s",
-        members.get(shuffledIndices[shuffledIndices.length - 1]),
-        members.get(shuffledIndices[0])
-    ));
+    result.add(
+        String.format(
+            "%s gift to %s",
+            members.get(shuffledIndices[shuffledIndices.length - 1]),
+            members.get(shuffledIndices[0])));
 
     result.stream().sorted().forEach(System.out::println);
 
     return 0;
   }
 
-
   private static List<Integer> createShuffledIntList(int size) {
-    var intList = IntStream.range(0, size)
-        .collect(ArrayList<Integer>::new, ArrayList::add, ArrayList::addAll);
+    var intList =
+        IntStream.range(0, size)
+            .collect(ArrayList<Integer>::new, ArrayList::add, ArrayList::addAll);
     Collections.shuffle(intList);
     return intList;
   }
-
 
   static List<Account> createTemporaryTeam(List<String> stringList) {
     TEMPORARY_GROUP.clear();
@@ -99,7 +94,8 @@ public abstract class Manager {
 
       if (name.equals(name.toUpperCase())) {
         if (RepositoryManager.existGroupByName(name)) {
-          RepositoryManager.teamOf(name).getMembersStream()
+          RepositoryManager.teamOf(name)
+              .getMembersStream()
               .forEach(m -> addToTemporaryTeam(m, toExclude));
         }
       } else {
@@ -115,7 +111,6 @@ public abstract class Manager {
 
     return result;
   }
-
 
   private static void addToTemporaryTeam(Account account, boolean toExclude) {
     if (toExclude) {

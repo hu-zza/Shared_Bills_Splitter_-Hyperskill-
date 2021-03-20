@@ -16,62 +16,50 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
-
 @Entity
 class Team implements Comparable<Team> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id = 0;
+
   private String name = "";
 
   @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "TEAM_ACCOUNT", joinColumns = {@JoinColumn(name = "TEAM_ID")},
+  @JoinTable(
+      name = "TEAM_ACCOUNT",
+      joinColumns = {@JoinColumn(name = "TEAM_ID")},
       inverseJoinColumns = {@JoinColumn(name = "ACCOUNT_ID")})
   private Set<Account> memberSet = new HashSet<>();
 
-
-  public Team() {
-  }
-
+  public Team() {}
 
   Team(String name) {
     this(name, Set.of());
   }
-
 
   Team(String name, Set<Account> members) {
     this.name = name;
     this.memberSet.addAll(members);
   }
 
-
-  int getId() {
-    return id;
-  }
-
-
-  String getName() {
-    return name;
-  }
-
-
   Stream<Account> getMembersStream() {
     return memberSet.stream().sorted();
   }
-
 
   @Override
   public int compareTo(Team o) {
     return Comparator.comparing(Team::getName).compare(this, o);
   }
 
+  String getName() {
+    return name;
+  }
 
   @Override
   public int hashCode() {
     return Objects.hash(id, name);
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -89,20 +77,22 @@ class Team implements Comparable<Team> {
     return Objects.equals(id, other.getId()) && Objects.equals(name, other.getName());
   }
 
+  int getId() {
+    return id;
+  }
 
   @Override
   public String toString() {
     var stringJoiner = new StringJoiner(System.lineSeparator());
-    memberSet.stream().sorted(Comparator.comparing(Account::getName))
+    memberSet.stream()
+        .sorted(Comparator.comparing(Account::getName))
         .forEach(m -> stringJoiner.add(m.getName()));
     return stringJoiner.toString();
   }
 
-
   boolean addMembers(List<Account> accountList) {
     return memberSet.addAll(accountList);
   }
-
 
   boolean removeMembers(List<Account> accountList) {
     return memberSet.removeAll(accountList);

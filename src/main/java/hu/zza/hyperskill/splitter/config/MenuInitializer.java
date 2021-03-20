@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
-
 public abstract class MenuInitializer {
 
   public static Menu initialize() {
@@ -39,20 +38,21 @@ public abstract class MenuInitializer {
     //////////
     // NODES
 
-    menuStructure.put(new MenuEntry.Node(MenuNode.ROOT,
-        "Shared Bills Splitter",
-        MenuLeaf.BALANCE,
-        MenuLeaf.BALANCEPERFECT,
-        MenuLeaf.BORROW,
-        MenuLeaf.CASHBACK,
-        MenuLeaf.EXIT,
-        MenuLeaf.GROUP,
-        MenuLeaf.HELP,
-        MenuLeaf.PURCHASE,
-        MenuLeaf.REPAY,
-        MenuLeaf.SECRETSANTA,
-        MenuLeaf.WRITEOFF
-    ));
+    menuStructure.put(
+        new MenuEntry.Node(
+            MenuNode.ROOT,
+            "Shared Bills Splitter",
+            MenuLeaf.BALANCE,
+            MenuLeaf.BALANCEPERFECT,
+            MenuLeaf.BORROW,
+            MenuLeaf.CASHBACK,
+            MenuLeaf.EXIT,
+            MenuLeaf.GROUP,
+            MenuLeaf.HELP,
+            MenuLeaf.PURCHASE,
+            MenuLeaf.REPAY,
+            MenuLeaf.SECRETSANTA,
+            MenuLeaf.WRITEOFF));
 
     //////////
     // LEAVES
@@ -73,41 +73,35 @@ public abstract class MenuInitializer {
     menuStructure.put(
         new MenuEntry.Leaf(MenuLeaf.BALANCE, "balance", Ledger::getBalance, FORWARD_ROOT_ROOT));
 
-    menuStructure.put(new MenuEntry.Leaf(MenuLeaf.BALANCEPERFECT,
-        "balancePerfect",
-        Ledger::getPerfectBalance,
-        FORWARD_ROOT_ROOT
-    ));
+    menuStructure.put(
+        new MenuEntry.Leaf(
+            MenuLeaf.BALANCEPERFECT,
+            "balancePerfect",
+            Ledger::getPerfectBalance,
+            FORWARD_ROOT_ROOT));
 
-    menuStructure.put(new MenuEntry.Leaf(MenuLeaf.BORROW,
-        "borrow",
-        Ledger::makeMicroTransaction,
-        FORWARD_ROOT_ROOT
-    ));
+    menuStructure.put(
+        new MenuEntry.Leaf(
+            MenuLeaf.BORROW, "borrow", Ledger::makeMicroTransaction, FORWARD_ROOT_ROOT));
 
-    menuStructure.put(new MenuEntry.Leaf(MenuLeaf.CASHBACK,
-        "cashBack",
-        Ledger::makeMacroTransaction,
-        FORWARD_ROOT_ROOT
-    ));
+    menuStructure.put(
+        new MenuEntry.Leaf(
+            MenuLeaf.CASHBACK, "cashBack", Ledger::makeMacroTransaction, FORWARD_ROOT_ROOT));
 
-    menuStructure
-        .put(new MenuEntry.Leaf(MenuLeaf.GROUP, "group", Manager::manageTeam, FORWARD_ROOT_ROOT));
+    menuStructure.put(
+        new MenuEntry.Leaf(MenuLeaf.GROUP, "group", Manager::manageTeam, FORWARD_ROOT_ROOT));
 
-    menuStructure.put(new MenuEntry.Leaf(MenuLeaf.PURCHASE,
-        "purchase",
-        Ledger::makeMacroTransaction,
-        FORWARD_ROOT_ROOT
-    ));
+    menuStructure.put(
+        new MenuEntry.Leaf(
+            MenuLeaf.PURCHASE, "purchase", Ledger::makeMacroTransaction, FORWARD_ROOT_ROOT));
 
-    menuStructure.put(new MenuEntry.Leaf(MenuLeaf.REPAY, "repay", Ledger::makeMicroTransaction,
-        FORWARD_ROOT_ROOT));
+    menuStructure.put(
+        new MenuEntry.Leaf(
+            MenuLeaf.REPAY, "repay", Ledger::makeMicroTransaction, FORWARD_ROOT_ROOT));
 
-    menuStructure.put(new MenuEntry.Leaf(MenuLeaf.SECRETSANTA,
-        "secretSanta",
-        Manager::secretSanta,
-        FORWARD_ROOT_ROOT
-    ));
+    menuStructure.put(
+        new MenuEntry.Leaf(
+            MenuLeaf.SECRETSANTA, "secretSanta", Manager::secretSanta, FORWARD_ROOT_ROOT));
 
     menuStructure.put(
         new MenuEntry.Leaf(MenuLeaf.WRITEOFF, "writeOff", Ledger::writeOff, FORWARD_ROOT_ROOT));
@@ -141,8 +135,8 @@ public abstract class MenuInitializer {
 
     // PARAMETERS : optional
 
-    final Parameter optionalDateParameter = Parameter
-        .of(dottedDateRegex, () -> String.valueOf(LocalDate.now()));
+    final Parameter optionalDateParameter =
+        Parameter.of(dottedDateRegex, () -> String.valueOf(LocalDate.now()));
 
     final Parameter optionalConstantParameter = constantParameter.with("CLOSE");
     final Parameter optionalListParameter = listParameter.with("");
@@ -157,64 +151,64 @@ public abstract class MenuInitializer {
     patternMap.put(MenuLeaf.HELP, parameterPattern);
     patternMap.put(MenuLeaf.EXIT, parameterPattern);
 
-    parameterPattern = new ParameterPattern(delimiter,
-        List.of(DATE, COMMAND),
-        optionalDateParameter,
-        constantParameter
-    );
+    parameterPattern =
+        new ParameterPattern(
+            delimiter, List.of(DATE, COMMAND), optionalDateParameter, constantParameter);
 
     patternMap.put(MenuLeaf.WRITEOFF, parameterPattern);
 
-    parameterPattern = new ParameterPattern(delimiter,
-        List.of(COMMAND, NAME),
-        constantParameter,
-        upperCaseWordParameter
-    );
+    parameterPattern =
+        new ParameterPattern(
+            delimiter, List.of(COMMAND, NAME), constantParameter, upperCaseWordParameter);
 
     patternMap.put(MenuLeaf.SECRETSANTA, parameterPattern);
 
-    parameterPattern = new ParameterPattern(delimiter,
-        List.of(DATE, COMMAND, METHOD, LIST),
-        optionalDateParameter,
-        constantParameter,
-        optionalConstantParameter,
-        optionalListParameter
-    );
+    parameterPattern =
+        new ParameterPattern(
+            delimiter,
+            List.of(DATE, COMMAND, METHOD, LIST),
+            optionalDateParameter,
+            constantParameter,
+            optionalConstantParameter,
+            optionalListParameter);
 
     patternMap.put(MenuLeaf.BALANCE, parameterPattern);
     patternMap.put(MenuLeaf.BALANCEPERFECT, parameterPattern);
 
-    parameterPattern = new ParameterPattern(delimiter,
-        List.of(COMMAND, METHOD, NAME, LIST),
-        constantParameter,
-        constantParameter,
-        upperCaseWordParameter,
-        optionalListParameter
-    );
+    parameterPattern =
+        new ParameterPattern(
+            delimiter,
+            List.of(COMMAND, METHOD, NAME, LIST),
+            constantParameter,
+            constantParameter,
+            upperCaseWordParameter,
+            optionalListParameter);
 
     patternMap.put(MenuLeaf.GROUP, parameterPattern);
 
-    parameterPattern = new ParameterPattern(delimiter,
-        List.of(DATE, COMMAND, FROM, TO, AMOUNT),
-        optionalDateParameter,
-        constantParameter,
-        wordParameter,
-        wordParameter,
-        numberParameter
-    );
+    parameterPattern =
+        new ParameterPattern(
+            delimiter,
+            List.of(DATE, COMMAND, FROM, TO, AMOUNT),
+            optionalDateParameter,
+            constantParameter,
+            wordParameter,
+            wordParameter,
+            numberParameter);
 
     patternMap.put(MenuLeaf.BORROW, parameterPattern);
     patternMap.put(MenuLeaf.REPAY, parameterPattern);
 
-    parameterPattern = new ParameterPattern(delimiter,
-        List.of(DATE, COMMAND, NAME, ITEM, AMOUNT, LIST),
-        optionalDateParameter,
-        constantParameter,
-        wordParameter,
-        wordParameter,
-        numberParameter,
-        listParameter
-    );
+    parameterPattern =
+        new ParameterPattern(
+            delimiter,
+            List.of(DATE, COMMAND, NAME, ITEM, AMOUNT, LIST),
+            optionalDateParameter,
+            constantParameter,
+            wordParameter,
+            wordParameter,
+            numberParameter,
+            listParameter);
 
     patternMap.put(MenuLeaf.PURCHASE, parameterPattern);
     patternMap.put(MenuLeaf.CASHBACK, parameterPattern);
@@ -222,7 +216,7 @@ public abstract class MenuInitializer {
     String commandRegex = "^(?:" + dottedDate + "\\s)?(\\w+)\\b";
     ParameterMatcher parameterMatcher = new ParameterMatcher(commandRegex, patternMap);
 
-    return Menu.of(menuStructure, ControlType.PARAMETRIC, MenuNode.class, MenuLeaf.class,
-        parameterMatcher);
+    return Menu.of(
+        menuStructure, ControlType.PARAMETRIC, MenuNode.class, MenuLeaf.class, parameterMatcher);
   }
 }

@@ -11,13 +11,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-
 @Entity
 class Transaction implements Comparable<Transaction> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id = 0;
+
   private LocalDate date = LocalDate.now();
 
   @ManyToOne
@@ -31,10 +31,7 @@ class Transaction implements Comparable<Transaction> {
   private BigDecimal amount = BigDecimal.ZERO;
   private boolean active = true;
 
-
-  public Transaction() {
-  }
-
+  public Transaction() {}
 
   Transaction(LocalDate date, Account accountA, Account accountB, BigDecimal amount) {
     this.date = date;
@@ -43,54 +40,44 @@ class Transaction implements Comparable<Transaction> {
     this.amount = amount;
   }
 
-
-  int getId() {
-    return id;
-  }
-
-
   Account getAccountA() {
     return accountA;
   }
-
 
   Account getAccountB() {
     return accountB;
   }
 
-
   LocalDate getDate() {
     return date;
   }
-
 
   BigDecimal getAmount() {
     return amount;
   }
 
-
   boolean isActive() {
     return active;
   }
-
 
   Transaction writeOff() {
     this.active = false;
     return this;
   }
 
-
   @Override
   public int compareTo(Transaction o) {
     return Comparator.comparingInt(Transaction::getId).compare(this, o);
   }
 
+  int getId() {
+    return id;
+  }
 
   @Override
   public int hashCode() {
     return Objects.hashCode(id);
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -108,11 +95,9 @@ class Transaction implements Comparable<Transaction> {
     return Objects.equals(id, other.getId());
   }
 
-
   @Override
   public String toString() {
-    return String
-        .format("On %s %s lent %.2f to %s.", date.toString(), accountA, amount.doubleValue(),
-            accountB);
+    return String.format(
+        "On %s %s lent %.2f to %s.", date.toString(), accountA, amount.doubleValue(), accountB);
   }
 }
