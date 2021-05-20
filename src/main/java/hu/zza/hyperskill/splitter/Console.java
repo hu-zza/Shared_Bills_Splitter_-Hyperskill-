@@ -1,10 +1,8 @@
 package hu.zza.hyperskill.splitter;
 
 import hu.zza.clim.Menu;
-import hu.zza.clim.parameter.Parameter;
-import hu.zza.clim.parameter.ParameterName;
+import hu.zza.clim.menu.ProcessedInput;
 import hu.zza.hyperskill.splitter.config.MenuInitializer;
-import java.util.Map;
 import java.util.Scanner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -15,12 +13,12 @@ public class Console implements CommandLineRunner {
   private static boolean waitingForUserInput;
   private static final Menu menu = MenuInitializer.initialize();
 
-  public static int help(Map<ParameterName, Parameter> parameterMap) {
-    menu.listOptions(false);
+  public static int help(ProcessedInput processedInput) {
+    menu.listOptions();
     return 0;
   }
 
-  public static int exit(Map<ParameterName, Parameter> parameterMap) {
+  public static int exit(ProcessedInput processedInput) {
     waitingForUserInput = false;
     return 0;
   }

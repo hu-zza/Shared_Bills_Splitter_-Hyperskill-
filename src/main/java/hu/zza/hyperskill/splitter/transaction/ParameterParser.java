@@ -8,7 +8,6 @@ import static hu.zza.hyperskill.splitter.config.MenuParameter.METHOD;
 import hu.zza.clim.parameter.Parameter;
 import hu.zza.clim.parameter.ParameterName;
 import hu.zza.hyperskill.splitter.config.MenuConstant;
-import hu.zza.hyperskill.splitter.config.MenuLeaf;
 import hu.zza.hyperskill.splitter.config.MenuParameter;
 import java.math.BigDecimal;
 import java.time.LocalDate;

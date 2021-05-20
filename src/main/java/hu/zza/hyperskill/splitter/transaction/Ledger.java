@@ -5,17 +5,14 @@ import static hu.zza.hyperskill.splitter.config.MenuParameter.LIST;
 import static hu.zza.hyperskill.splitter.config.MenuParameter.NAME;
 import static hu.zza.hyperskill.splitter.config.MenuParameter.TO;
 
-import hu.zza.clim.parameter.Parameter;
-import hu.zza.clim.parameter.ParameterName;
+import hu.zza.clim.menu.ProcessedInput;
 import hu.zza.hyperskill.splitter.config.MenuConstant;
-import hu.zza.hyperskill.splitter.config.MenuLeaf;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -28,8 +25,8 @@ public abstract class Ledger {
   private static final int PRECISION = 2;
   private static final BigDecimal CENT = new BigDecimal("0.01");
 
-  public static int makeMicroTransaction(Map<ParameterName, Parameter> parameterMap) {
-
+  public static int makeMicroTransaction(ProcessedInput processedInput) {
+    Map<>
     RepositoryManager.makeTransaction(
         ParameterParser.getDate(parameterMap),
         ParameterParser.getAccount(parameterMap, FROM),
@@ -40,7 +37,7 @@ public abstract class Ledger {
     return 0;
   }
 
-  public static int makeMacroTransaction(Map<ParameterName, Parameter> parameterMap) {
+  public static int makeMacroTransaction(ProcessedInput processedInput) {
     LocalDate transactionDate = ParameterParser.getDate(parameterMap);
     Account buyer = ParameterParser.getAccount(parameterMap, NAME);
     BigDecimal cost = ParameterParser.getAmount(parameterMap);
@@ -121,7 +118,7 @@ public abstract class Ledger {
     return dividend.subtract(divideWithCents(dividend, divisor).multiply(divisor));
   }
 
-  public static int getPerfectBalance(Map<ParameterName, Parameter> parameterMap) {
+  public static int getPerfectBalance(ProcessedInput processedInput) {
     System.out.println("Chuck owes Bob 30.00");
     List<Account> accountList = ParameterParser.getAccountList(parameterMap);
     accountList.forEach(
@@ -132,7 +129,7 @@ public abstract class Ledger {
     return 0;
   }
 
-  public static int getBalance(Map<ParameterName, Parameter> parameterMap) {
+  public static int getBalance(ProcessedInput processedInput) {
     MenuConstant method = ParameterParser.getMethod(parameterMap);
     LocalDate date = ParameterParser.getDate(parameterMap);
     List<Account> accountList = ParameterParser.getAccountList(parameterMap);
@@ -205,7 +202,7 @@ public abstract class Ledger {
     }
   }
 
-  public static int writeOff(Map<ParameterName, Parameter> parameterMap) {
+  public static int writeOff(ProcessedInput processedInput) {
     LocalDate date = ParameterParser.getDate(parameterMap);
     RepositoryManager.writeOffTransactionsUntil(date.plusDays(1));
     return 0;

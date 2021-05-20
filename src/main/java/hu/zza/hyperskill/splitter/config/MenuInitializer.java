@@ -10,110 +10,42 @@ import static hu.zza.hyperskill.splitter.config.MenuParameter.METHOD;
 import static hu.zza.hyperskill.splitter.config.MenuParameter.NAME;
 import static hu.zza.hyperskill.splitter.config.MenuParameter.TO;
 
-import hu.zza.clim.ControlType;
 import hu.zza.clim.Menu;
-import hu.zza.clim.MenuEntry;
-import hu.zza.clim.MenuStructure;
-import hu.zza.clim.Position;
+import hu.zza.clim.MenuBuilder;
+import hu.zza.clim.MenuStructureBuilder;
+import hu.zza.clim.ParameterMatcherBuilder;
+import hu.zza.clim.UserInterface;
+import hu.zza.clim.menu.MenuStructure;
 import hu.zza.clim.parameter.Parameter;
 import hu.zza.clim.parameter.ParameterMatcher;
-import hu.zza.clim.parameter.ParameterPattern;
+import hu.zza.clim.parameter.Parameters;
 import hu.zza.hyperskill.splitter.Console;
 import hu.zza.hyperskill.splitter.transaction.Ledger;
 import hu.zza.hyperskill.splitter.transaction.Manager;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 
 public abstract class MenuInitializer {
 
   public static Menu initialize() {
-    /////////////////////////
-    /////////////////////////
-    //  STRUCTURAL SETTINGS
-    //
 
-    var menuStructure = new MenuStructure();
-
-    //////////
-    // NODES
-
-    menuStructure.put(
-        new MenuEntry.Node(
-            MenuNode.ROOT,
-            "Shared Bills Splitter",
-            MenuLeaf.BALANCE,
-            MenuLeaf.BALANCEPERFECT,
-            MenuLeaf.BORROW,
-            MenuLeaf.CASHBACK,
-            MenuLeaf.EXIT,
-            MenuLeaf.GROUP,
-            MenuLeaf.HELP,
-            MenuLeaf.PURCHASE,
-            MenuLeaf.REPAY,
-            MenuLeaf.SECRETSANTA,
-            MenuLeaf.WRITEOFF));
-
-    //////////
-    // LEAVES
-
-    // Constant forward link arrays for the most typical cases.
-    // The schema: FORWARD_<success>_<fail>
-
-    final MenuNode[] FORWARD_ROOT_ROOT = {MenuNode.ROOT, MenuNode.ROOT};
-
-    // GENERAL leaf
-
-    menuStructure.put(new MenuEntry.Leaf(MenuLeaf.EXIT, "exit", Console::exit, FORWARD_ROOT_ROOT));
-
-    menuStructure.put(new MenuEntry.Leaf(MenuLeaf.HELP, "help", Console::help, FORWARD_ROOT_ROOT));
-
-    // ROOT (parent node)
-
-    menuStructure.put(
-        new MenuEntry.Leaf(MenuLeaf.BALANCE, "balance", Ledger::getBalance, FORWARD_ROOT_ROOT));
-
-    menuStructure.put(
-        new MenuEntry.Leaf(
-            MenuLeaf.BALANCEPERFECT,
-            "balancePerfect",
-            Ledger::getPerfectBalance,
-            FORWARD_ROOT_ROOT));
-
-    menuStructure.put(
-        new MenuEntry.Leaf(
-            MenuLeaf.BORROW, "borrow", Ledger::makeMicroTransaction, FORWARD_ROOT_ROOT));
-
-    menuStructure.put(
-        new MenuEntry.Leaf(
-            MenuLeaf.CASHBACK, "cashBack", Ledger::makeMacroTransaction, FORWARD_ROOT_ROOT));
-
-    menuStructure.put(
-        new MenuEntry.Leaf(MenuLeaf.GROUP, "group", Manager::manageTeam, FORWARD_ROOT_ROOT));
-
-    menuStructure.put(
-        new MenuEntry.Leaf(
-            MenuLeaf.PURCHASE, "purchase", Ledger::makeMacroTransaction, FORWARD_ROOT_ROOT));
-
-    menuStructure.put(
-        new MenuEntry.Leaf(
-            MenuLeaf.REPAY, "repay", Ledger::makeMicroTransaction, FORWARD_ROOT_ROOT));
-
-    menuStructure.put(
-        new MenuEntry.Leaf(
-            MenuLeaf.SECRETSANTA, "secretSanta", Manager::secretSanta, FORWARD_ROOT_ROOT));
-
-    menuStructure.put(
-        new MenuEntry.Leaf(MenuLeaf.WRITEOFF, "writeOff", Ledger::writeOff, FORWARD_ROOT_ROOT));
-
-    menuStructure.setFinalized();
-
-    /////////////////////////
-    /////////////////////////
-    //  PARAMETRIC MAGIC
-    //
-
-    // REGEXES
+    MenuStructure menuStructure =
+        new MenuStructureBuilder()
+            .setRawMenuStructure(
+                "{\"Shared Bills Splitter\" : [\"balance\", \"balancePerfect\", \"borrow\", \"cashBack\", "
+                    + "\"exit\", \"group\", \"help\", \"purchase\", \"repay\", \"secretSanta\", \"writeOff\"]}")
+            .setLeaf("exit", Console::exit, "Shared Bills Splitter")
+            .setLeaf("help", Console::help, "Shared Bills Splitter")
+            .setLeaf("balance", Ledger::getBalance, "Shared Bills Splitter")
+            .setLeaf("balancePerfect", Ledger::getPerfectBalance, "Shared Bills Splitter")
+            .setLeaf("borrow", Ledger::makeMicroTransaction, "Shared Bills Splitter")
+            .setLeaf("cashBack", Ledger::makeMacroTransaction, "Shared Bills Splitter")
+            .setLeaf("group", Manager::manageTeam, "Shared Bills Splitter")
+            .setLeaf("purchase", Ledger::makeMacroTransaction, "Shared Bills Splitter")
+            .setLeaf("repay", Ledger::makeMicroTransaction, "Shared Bills Splitter")
+            .setLeaf("secretSanta", Manager::secretSanta, "Shared Bills Splitter")
+            .setLeaf("writeOff", Ledger::writeOff, "Shared Bills Splitter")
+            .build();
 
     final String delimiter = " ";
     final String dottedDate = "\\d{4}.\\d{2}.\\d{2}";
@@ -125,98 +57,108 @@ public abstract class MenuInitializer {
     final String numberRegex = "([+-]?\\d+(?:\\.\\d{1,2})?)";
     final String listRegex = "\\(([+-]?\\w+(?:, [+-]?\\w+)*)\\)";
 
-    // PARAMETERS : required
-
-    final Parameter wordParameter = Parameter.of(wordRegex);
+    final Parameter wordParameter = Parameters.of(wordRegex);
     final Parameter constantParameter = wordParameter.with(String::toUpperCase);
-    final Parameter upperCaseWordParameter = Parameter.of(upperCaseWordRegex);
-    final Parameter numberParameter = Parameter.of(numberRegex);
-    final Parameter listParameter = Parameter.of(listRegex);
-
-    // PARAMETERS : optional
+    final Parameter upperCaseWordParameter = Parameters.of(upperCaseWordRegex);
+    final Parameter numberParameter = Parameters.of(numberRegex);
+    final Parameter listParameter = Parameters.of(listRegex);
 
     final Parameter optionalDateParameter =
-        Parameter.of(dottedDateRegex, () -> String.valueOf(LocalDate.now()));
+        Parameters.of(dottedDateRegex, () -> String.valueOf(LocalDate.now()));
 
     final Parameter optionalConstantParameter = constantParameter.with("CLOSE");
     final Parameter optionalListParameter = listParameter.with("");
 
-    // BUILDING patternMap
+    ParameterMatcher parameterMatcher =
+        new ParameterMatcherBuilder()
+            .setCommandRegex("^(?:" + dottedDate + "\\s)?(\\w+)\\b")
+            .setLeafParameters("help", delimiter, List.of(COMMAND), List.of(constantParameter))
+            .setLeafParameters("exit", delimiter, List.of(COMMAND), List.of(constantParameter))
+            .setLeafParameters(
+                "writeOff",
+                delimiter,
+                List.of(DATE, COMMAND),
+                List.of(optionalDateParameter, constantParameter))
+            .setLeafParameters(
+                "secretSanta",
+                delimiter,
+                List.of(COMMAND, NAME),
+                List.of(constantParameter, upperCaseWordParameter))
+            .setLeafParameters(
+                "balance",
+                delimiter,
+                List.of(DATE, COMMAND, METHOD, LIST),
+                List.of(
+                    optionalDateParameter,
+                    constantParameter,
+                    optionalConstantParameter,
+                    optionalListParameter))
+            .setLeafParameters(
+                "balancePerfect",
+                delimiter,
+                List.of(DATE, COMMAND, METHOD, LIST),
+                List.of(
+                    optionalDateParameter,
+                    constantParameter,
+                    optionalConstantParameter,
+                    optionalListParameter))
+            .setLeafParameters(
+                "group",
+                delimiter,
+                List.of(COMMAND, METHOD, NAME, LIST),
+                List.of(
+                    constantParameter,
+                    constantParameter,
+                    upperCaseWordParameter,
+                    optionalListParameter))
+            .setLeafParameters(
+                "borrow",
+                delimiter,
+                List.of(DATE, COMMAND, FROM, TO, AMOUNT),
+                List.of(
+                    optionalDateParameter,
+                    constantParameter,
+                    wordParameter,
+                    wordParameter,
+                    numberParameter))
+            .setLeafParameters(
+                "repay",
+                delimiter,
+                List.of(DATE, COMMAND, FROM, TO, AMOUNT),
+                List.of(
+                    optionalDateParameter,
+                    constantParameter,
+                    wordParameter,
+                    wordParameter,
+                    numberParameter))
+            .setLeafParameters(
+                "purchase",
+                delimiter,
+                List.of(DATE, COMMAND, NAME, ITEM, AMOUNT, LIST),
+                List.of(
+                    optionalDateParameter,
+                    constantParameter,
+                    wordParameter,
+                    wordParameter,
+                    numberParameter,
+                    listParameter))
+            .setLeafParameters(
+                "cashBack",
+                delimiter,
+                List.of(DATE, COMMAND, NAME, ITEM, AMOUNT, LIST),
+                List.of(
+                    optionalDateParameter,
+                    constantParameter,
+                    wordParameter,
+                    wordParameter,
+                    numberParameter,
+                    listParameter))
+            .build();
 
-    HashMap<Position, ParameterPattern> patternMap = new HashMap<>();
-    ParameterPattern parameterPattern;
-
-    parameterPattern = new ParameterPattern(delimiter, List.of(COMMAND), constantParameter);
-
-    patternMap.put(MenuLeaf.HELP, parameterPattern);
-    patternMap.put(MenuLeaf.EXIT, parameterPattern);
-
-    parameterPattern =
-        new ParameterPattern(
-            delimiter, List.of(DATE, COMMAND), optionalDateParameter, constantParameter);
-
-    patternMap.put(MenuLeaf.WRITEOFF, parameterPattern);
-
-    parameterPattern =
-        new ParameterPattern(
-            delimiter, List.of(COMMAND, NAME), constantParameter, upperCaseWordParameter);
-
-    patternMap.put(MenuLeaf.SECRETSANTA, parameterPattern);
-
-    parameterPattern =
-        new ParameterPattern(
-            delimiter,
-            List.of(DATE, COMMAND, METHOD, LIST),
-            optionalDateParameter,
-            constantParameter,
-            optionalConstantParameter,
-            optionalListParameter);
-
-    patternMap.put(MenuLeaf.BALANCE, parameterPattern);
-    patternMap.put(MenuLeaf.BALANCEPERFECT, parameterPattern);
-
-    parameterPattern =
-        new ParameterPattern(
-            delimiter,
-            List.of(COMMAND, METHOD, NAME, LIST),
-            constantParameter,
-            constantParameter,
-            upperCaseWordParameter,
-            optionalListParameter);
-
-    patternMap.put(MenuLeaf.GROUP, parameterPattern);
-
-    parameterPattern =
-        new ParameterPattern(
-            delimiter,
-            List.of(DATE, COMMAND, FROM, TO, AMOUNT),
-            optionalDateParameter,
-            constantParameter,
-            wordParameter,
-            wordParameter,
-            numberParameter);
-
-    patternMap.put(MenuLeaf.BORROW, parameterPattern);
-    patternMap.put(MenuLeaf.REPAY, parameterPattern);
-
-    parameterPattern =
-        new ParameterPattern(
-            delimiter,
-            List.of(DATE, COMMAND, NAME, ITEM, AMOUNT, LIST),
-            optionalDateParameter,
-            constantParameter,
-            wordParameter,
-            wordParameter,
-            numberParameter,
-            listParameter);
-
-    patternMap.put(MenuLeaf.PURCHASE, parameterPattern);
-    patternMap.put(MenuLeaf.CASHBACK, parameterPattern);
-
-    String commandRegex = "^(?:" + dottedDate + "\\s)?(\\w+)\\b";
-    ParameterMatcher parameterMatcher = new ParameterMatcher(commandRegex, patternMap);
-
-    return Menu.of(
-        menuStructure, ControlType.PARAMETRIC, MenuNode.class, MenuLeaf.class, parameterMatcher);
-  }
+    return new MenuBuilder()
+        .setMenuStructure(menuStructure)
+        .setClimOptions(UserInterface.PARAMETRIC)
+        .setParameterMatcher(parameterMatcher)
+        .build();
+    }
 }
