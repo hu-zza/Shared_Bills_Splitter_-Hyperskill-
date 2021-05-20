@@ -1,12 +1,9 @@
 package hu.zza.hyperskill.splitter.transaction;
 
 import hu.zza.clim.menu.ProcessedInput;
-import hu.zza.clim.parameter.Parameter;
-import hu.zza.clim.parameter.ParameterName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -16,11 +13,11 @@ public abstract class Manager {
   private static final List<Account> EXCLUDING_LIST = new ArrayList<>();
 
   public static int manageTeam(ProcessedInput processedInput) {
-    String name = ParameterParser.getName(parameterMap);
-    List<Account> accountList = ParameterParser.getAccountList(parameterMap);
+    String name = ParameterParser.getName(processedInput);
+    List<Account> accountList = ParameterParser.getAccountList(processedInput);
 
     try {
-      switch (ParameterParser.getMethod(parameterMap)) {
+      switch (ParameterParser.getMethod(processedInput)) {
         case SHOW:
           if (RepositoryManager.existGroupByName(name)) {
             System.out.println(RepositoryManager.teamOf(name));
@@ -48,7 +45,7 @@ public abstract class Manager {
   }
 
   public static int secretSanta(ProcessedInput processedInput) {
-    Team team = ParameterParser.getTeam(parameterMap);
+    Team team = ParameterParser.getTeam(processedInput);
 
     List<Account> members = team.getMembersStream().collect(Collectors.toList());
     if (members.size() < 1) {

@@ -26,31 +26,30 @@ public abstract class Ledger {
   private static final BigDecimal CENT = new BigDecimal("0.01");
 
   public static int makeMicroTransaction(ProcessedInput processedInput) {
-    Map<>
     RepositoryManager.makeTransaction(
-        ParameterParser.getDate(parameterMap),
-        ParameterParser.getAccount(parameterMap, FROM),
-        ParameterParser.getAccount(parameterMap, TO),
-        ParameterParser.getAmount(parameterMap),
-        ParameterParser.getCommand(parameterMap) == MenuLeaf.BORROW);
+        ParameterParser.getDate(processedInput),
+        ParameterParser.getAccount(processedInput, FROM),
+        ParameterParser.getAccount(processedInput, TO),
+        ParameterParser.getAmount(processedInput),
+        "borrow".equals(ParameterParser.getCommand(processedInput)));
 
     return 0;
   }
 
   public static int makeMacroTransaction(ProcessedInput processedInput) {
-    LocalDate transactionDate = ParameterParser.getDate(parameterMap);
-    Account buyer = ParameterParser.getAccount(parameterMap, NAME);
-    BigDecimal cost = ParameterParser.getAmount(parameterMap);
-    boolean reversed = ParameterParser.getCommand(parameterMap) == MenuLeaf.CASHBACK;
+    LocalDate transactionDate = ParameterParser.getDate(processedInput);
+    Account buyer = ParameterParser.getAccount(processedInput, NAME);
+    BigDecimal cost = ParameterParser.getAmount(processedInput);
+    boolean reversed = "cashBack".equals(ParameterParser.getCommand(processedInput));
 
-    List<Account> accountList = ParameterParser.getAccountList(parameterMap);
+    List<Account> accountList = ParameterParser.getAccountList(processedInput);
 
     int listSize = accountList.size();
     if (listSize < 1) {
       throw new IllegalArgumentException(
           String.format(
               "The account list '(%s)' is effectively empty, transaction fails.",
-              parameterMap.get(LIST).getValue()));
+              processedInput.getParameter(LIST).getValue()));
     }
 
     BigDecimal[] costs = divideCostBetween(cost, listSize);
@@ -120,7 +119,7 @@ public abstract class Ledger {
 
   public static int getPerfectBalance(ProcessedInput processedInput) {
     System.out.println("Chuck owes Bob 30.00");
-    List<Account> accountList = ParameterParser.getAccountList(parameterMap);
+    List<Account> accountList = ParameterParser.getAccountList(processedInput);
     accountList.forEach(
         a -> {
           a.getIncomingStream().forEach(System.out::println);
@@ -130,9 +129,9 @@ public abstract class Ledger {
   }
 
   public static int getBalance(ProcessedInput processedInput) {
-    MenuConstant method = ParameterParser.getMethod(parameterMap);
-    LocalDate date = ParameterParser.getDate(parameterMap);
-    List<Account> accountList = ParameterParser.getAccountList(parameterMap);
+    MenuConstant method = ParameterParser.getMethod(processedInput);
+    LocalDate date = ParameterParser.getDate(processedInput);
+    List<Account> accountList = ParameterParser.getAccountList(processedInput);
 
     switch (method) {
       case OPEN:
@@ -203,7 +202,7 @@ public abstract class Ledger {
   }
 
   public static int writeOff(ProcessedInput processedInput) {
-    LocalDate date = ParameterParser.getDate(parameterMap);
+    LocalDate date = ParameterParser.getDate(processedInput);
     RepositoryManager.writeOffTransactionsUntil(date.plusDays(1));
     return 0;
   }
