@@ -10,6 +10,7 @@ import static hu.zza.hyperskill.splitter.config.MenuParameter.METHOD;
 import static hu.zza.hyperskill.splitter.config.MenuParameter.NAME;
 import static hu.zza.hyperskill.splitter.config.MenuParameter.TO;
 
+import hu.zza.clim.HeaderStyle;
 import hu.zza.clim.Menu;
 import hu.zza.clim.MenuBuilder;
 import hu.zza.clim.MenuStructureBuilder;
@@ -157,7 +158,7 @@ public abstract class MenuInitializer {
 
     return new MenuBuilder()
         .setMenuStructure(menuStructure)
-        .setClimOptions(UserInterface.PARAMETRIC)
+        .setClimOptions(UserInterface.PARAMETRIC, HeaderStyle.HIDDEN)
         .setParameterMatcher(parameterMatcher)
         .build();
     }
