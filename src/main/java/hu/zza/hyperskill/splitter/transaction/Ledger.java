@@ -26,12 +26,18 @@ public abstract class Ledger {
   private static final BigDecimal CENT = new BigDecimal("0.01");
 
   public static int makeMicroTransaction(ProcessedInput processedInput) {
+    System.out.println(ParameterParser.getDate(processedInput));
+    System.out.println(ParameterParser.getAccount(processedInput, FROM));
+    System.out.println(ParameterParser.getAccount(processedInput, TO));
+    System.out.println(ParameterParser.getAmount(processedInput));
+    System.out.println(ParameterParser.getCommand(processedInput));
+
     RepositoryManager.makeTransaction(
         ParameterParser.getDate(processedInput),
         ParameterParser.getAccount(processedInput, FROM),
         ParameterParser.getAccount(processedInput, TO),
         ParameterParser.getAmount(processedInput),
-        "borrow".equals(ParameterParser.getCommand(processedInput)));
+        "borrow".equalsIgnoreCase(ParameterParser.getCommand(processedInput)));
 
     return 0;
   }
@@ -40,7 +46,7 @@ public abstract class Ledger {
     LocalDate transactionDate = ParameterParser.getDate(processedInput);
     Account buyer = ParameterParser.getAccount(processedInput, NAME);
     BigDecimal cost = ParameterParser.getAmount(processedInput);
-    boolean reversed = "cashBack".equals(ParameterParser.getCommand(processedInput));
+    boolean reversed = "cashBack".equalsIgnoreCase(ParameterParser.getCommand(processedInput));
 
     List<Account> accountList = ParameterParser.getAccountList(processedInput);
 

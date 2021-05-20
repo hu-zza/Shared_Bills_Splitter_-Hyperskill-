@@ -31,7 +31,6 @@ public abstract class MenuInitializer {
 
     MenuStructure menuStructure =
         new MenuStructureBuilder()
-            .setInitialPosition("Shared Bills Splitter")
             .setRawMenuStructure(
                 "{\"Shared Bills Splitter\" : [\"balance\", \"balancePerfect\", \"borrow\", \"cashBack\", "
                     + "\"exit\", \"group\", \"help\", \"purchase\", \"repay\", \"secretSanta\", \"writeOff\"]}")
