@@ -26,12 +26,6 @@ public abstract class Ledger {
   private static final BigDecimal CENT = new BigDecimal("0.01");
 
   public static int makeMicroTransaction(ProcessedInput processedInput) {
-    System.out.println(ParameterParser.getDate(processedInput));
-    System.out.println(ParameterParser.getAccount(processedInput, FROM));
-    System.out.println(ParameterParser.getAccount(processedInput, TO));
-    System.out.println(ParameterParser.getAmount(processedInput));
-    System.out.println(ParameterParser.getCommand(processedInput));
-
     RepositoryManager.makeTransaction(
         ParameterParser.getDate(processedInput),
         ParameterParser.getAccount(processedInput, FROM),
